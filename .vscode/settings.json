@@ -1,0 +1,31 @@
+{
+  // --- Formatting: Prettier only ---
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Ensure Prettier wins even if users have other global defaults
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[yaml]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  // Use the repo's Prettier config only
+  "prettier.requireConfig": true,
+  "prettier.useEditorConfig": true,
+
+  // --- Biome: lint & safe fixes (no formatting) ---
+  "biome.enabled": true,
+  // Only activate Biome if a biome config exists in the workspace
+  "biome.requireConfiguration": true,
+
+  // Run Biome's safe fixes & import sorting when you explicitly save
+  // (Change "explicit" to "always" if you want these to happen on every save)
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  }
+}
