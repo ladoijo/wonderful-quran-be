@@ -1,17 +1,19 @@
+import { CLIENT_ID, CLIENT_SECRET, ContentBaseURL, OAuthTokenURL } from '@utils/env.js';
+import axios from 'axios';
 import {
   QF_CHAPTER_PATH,
   QF_CHAPTERS_PATH,
-  QF_VERSES_BY_CHAPTER_ID_PATH
+  QF_JUZS_PATH,
+  QF_VERSES_BY_CHAPTER_ID_PATH,
+  QF_VERSES_BY_JUZ_NO_PATH
 } from '@/const/endpoints.js';
 import type {
   GetAccessTokenResp,
   GetChapterResp,
+  GetJuszResp,
   GetVerseByChapterIdQueryReq,
   GetVerseByChapterIdResp
 } from '@/types/qf.js';
-import { ContentBaseURL, OAuthTokenURL } from '@utils/env.js';
-import { CLIENT_ID, CLIENT_SECRET } from '@utils/env.js';
-import axios from 'axios';
 
 let cachedToken: { token: string; expiresAt: number } | null = null;
 export async function getAccessToken(): Promise<string> {
@@ -33,6 +35,7 @@ export async function getAccessToken(): Promise<string> {
       },
       timeout: 10000
     });
+    console.log('data', data);
     const expiresAt = now + data.expires_in;
     const token = data.access_token;
     cachedToken = { token, expiresAt };
@@ -45,6 +48,7 @@ export async function getAccessToken(): Promise<string> {
 
 async function qfGet<T>(path: string, params?: Record<string, unknown>): Promise<T> {
   const token = await getAccessToken();
+  console.log('token', token);
   const urlPath = ContentBaseURL + path;
 
   try {
@@ -92,6 +96,38 @@ export async function getVersesByChapterId(
 
   return await qfGet<GetVerseByChapterIdResp[]>(
     QF_VERSES_BY_CHAPTER_ID_PATH.replace(':chapterId', chapterId.toString()),
+    {
+      language,
+      words,
+      per_page,
+      page,
+      translations,
+      tafsirs,
+      ...otherQueries
+    }
+  );
+}
+
+export async function getJuzs(): Promise<GetJuszResp[]> {
+  return await qfGet<GetJuszResp[]>(QF_JUZS_PATH);
+}
+
+export async function getVersesByJuzNumber(
+  juzNumber: number,
+  query: GetVerseByChapterIdQueryReq
+): Promise<GetVerseByChapterIdResp[]> {
+  const {
+    language = 'en',
+    words = true,
+    per_page = 10,
+    page = 1,
+    translations,
+    tafsirs,
+    ...otherQueries
+  } = query;
+
+  return await qfGet<GetVerseByChapterIdResp[]>(
+    QF_VERSES_BY_JUZ_NO_PATH.replace(':juzNumber', juzNumber.toString()),
     {
       language,
       words,
