@@ -6,13 +6,13 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch --env-file=.env.dev src/server.ts",
-    "prod": "tsx watch --env-file=.env src/server.ts",
-    "debug": "tsx watch --inspect --env-file=.env.dev src/server.ts",
-    "debug:break": "tsx watch --inspect-brk --env-file=.env.dev src/server.ts",
+    "dev": "tsx watch --env-file=.env.dev src/local.ts",
+    "prod": "tsx watch --env-file=.env src/local.ts",
+    "debug": "tsx watch --inspect --env-file=.env.dev src/local.ts",
+    "debug:break": "tsx watch --inspect-brk --env-file=.env.dev src/local.ts",
     "build": "tsc -p tsconfig.json",
     "build:lambda": "node scripts/build-lambda.mjs",
-    "start": "node dist/server.js",
+    "start": "node dist/local.js",
     "lint": "biome lint . --reporter=summary",
     "format": "prettier . --write",
     "check": "prettier . -c && biome lint . --reporter=summary"
