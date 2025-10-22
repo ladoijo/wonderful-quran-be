@@ -55,6 +55,7 @@ LOG_LEVEL=info
 - `pnpm dev` – run the API in watch mode using `.env.dev`
 - `pnpm prod` – watch mode using `.env`
 - `pnpm build` – type-check and emit JavaScript to `dist/`
+- `pnpm build:lambda` – bundle the Lambda handler with esbuild into `dist-lambda/`
 - `pnpm start` – run the compiled server from `dist/`
 - `pnpm lint` – run Biome lint
 - `pnpm format` – run Prettier
@@ -101,8 +102,11 @@ control verbosity with the `LOG_LEVEL` environment variable.
 ## Deployment Notes
 
 - Ensure production credentials and base URLs are configured (`QF_ENV=production`)
+- `pnpm build:lambda` creates a single-file bundle at `dist-lambda/server.mjs` optimised for AWS Lambda
+- Stage a deployment bundle by copying `dist-lambda/` and running `pnpm install --prod` in a clean folder (or reuse `pnpm deploy --prod`)
+- Zip the staged folder so the archive root contains `dist-lambda/server.mjs` (handler `dist-lambda/server.handler`) and any required assets
+- Configure Lambda environment variables (`QF_*`, `LOG_LEVEL`) via the console or IaC
 - Consider persisting OAuth tokens externally if running multiple replicas
-- Set up HTTPS termination and reverse proxy (e.g., Nginx) as needed
 
 ## License
 

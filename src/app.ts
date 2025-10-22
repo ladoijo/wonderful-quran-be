@@ -10,14 +10,21 @@ interface AppError extends Error {
   details?: unknown;
 }
 
+const enablePrettyLogs =
+  process.env.AWS_LAMBDA_FUNCTION_NAME === undefined && process.env.NODE_ENV !== 'production';
+
 const logger = pino({
   level: process.env.LOG_LEVEL ?? 'info',
-  transport: {
-    target: 'pino-pretty',
-    options: {
-      colorize: true
-    }
-  }
+  ...(enablePrettyLogs
+    ? {
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            colorize: true
+          }
+        }
+      }
+    : {})
 });
 
 export function createApp(): Application {
