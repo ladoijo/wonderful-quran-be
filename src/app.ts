@@ -1,6 +1,6 @@
-import express from 'express';
-import type { Application } from 'express';
 import cors from 'cors';
+import type { Application } from 'express';
+import express from 'express';
 import pino from 'pino';
 import { pinoHttp } from 'pino-http';
 import quranRoutes from '@/routes/qf.routes.js';
