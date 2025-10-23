@@ -20,9 +20,6 @@ importers:
       express:
         specifier: ^5.1.0
         version: 5.1.0
-      form-data:
-        specifier: ^4.0.4
-        version: 4.0.4
       pino:
         specifier: ^9.11.0
         version: 9.11.0
