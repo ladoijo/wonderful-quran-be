@@ -16,8 +16,9 @@ verse content without managing the upstream auth workflow.
 
 ## Project Structure
 
-- `src/server.ts` – boots the Express server
 - `src/app.ts` – configures middleware, logging, and routing
+- `src/local.ts` – boots the Express server for local development
+- `src/server.ts` – exports the AWS Lambda handler, wrapping the Express app
 - `src/routes/qf.routes.ts` – Qur'an Foundation API-backed routes
 - `src/services/qfClient.ts` – OAuth token management and upstream requests
 - `src/utils` – environment variable loader & reusable error helpers
@@ -55,18 +56,33 @@ LOG_LEVEL=info
 - `pnpm dev` – run the API in watch mode using `.env.dev`
 - `pnpm prod` – watch mode using `.env`
 - `pnpm build` – type-check and emit JavaScript to `dist/`
-- `pnpm start` – run the compiled server from `dist/`
+- `pnpm start` – run the compiled server from `dist/local.js`
+- `pnpm build:lambda` – bundle the Lambda handler with esbuild into `dist-lambda/`
 - `pnpm lint` – run Biome lint
 - `pnpm format` – run Prettier
 
 ## Running Locally
 
-```bash
-pnpm dev
-```
+Local development uses `src/local.ts`, which keeps an Express listener running:
+
+- `pnpm dev` – hot-reload with `.env.dev`
+- `pnpm prod` – hot-reload against `.env`
+- `pnpm build && pnpm start` – run the compiled output from `dist/local.js`
 
 The server listens on `http://localhost:PORT` (defaults to `3000`). A health
 check is available at `/health`.
+
+### Lambda Bundle
+
+Build the AWS Lambda bundle (a self-contained ESM file in `dist-lambda/`):
+
+```bash
+pnpm build:lambda
+```
+
+The bundle exports a `handler` compatible with AWS API Gateway/Lambda.
+
+````
 
 ## API Endpoints
 
@@ -91,7 +107,7 @@ Validation & defaults are handled with Zod inside the route definitions.
 
 ```bash
 curl "http://localhost:3000/api/chapters/1/verses?language=en&per_page=5"
-```
+````
 
 ## Logging
 
@@ -101,8 +117,11 @@ control verbosity with the `LOG_LEVEL` environment variable.
 ## Deployment Notes
 
 - Ensure production credentials and base URLs are configured (`QF_ENV=production`)
+- `pnpm build:lambda` creates a single-file bundle at `dist-lambda/server.mjs` optimised for AWS Lambda
+- Stage a deployment bundle by copying `dist-lambda/` and running `pnpm install --prod` in a clean folder (or reuse `pnpm deploy --prod`)
+- Zip the staged folder so the archive root contains `dist-lambda/server.mjs` (handler `dist-lambda/server.handler`) and any required assets
+- Configure Lambda environment variables (`QF_*`, `LOG_LEVEL`) via the console or IaC
 - Consider persisting OAuth tokens externally if running multiple replicas
-- Set up HTTPS termination and reverse proxy (e.g., Nginx) as needed
 
 ## License
 

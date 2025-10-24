@@ -1,2 +1,8 @@
 dist/
 node_modules/
+dist-lambda/
+lambda-build
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example

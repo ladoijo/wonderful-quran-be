@@ -35,7 +35,6 @@ export async function getAccessToken(): Promise<string> {
       },
       timeout: 10000
     });
-    console.log('data', data);
     const expiresAt = now + data.expires_in;
     const token = data.access_token;
     cachedToken = { token, expiresAt };
@@ -48,7 +47,6 @@ export async function getAccessToken(): Promise<string> {
 
 async function qfGet<T>(path: string, params?: Record<string, unknown>): Promise<T> {
   const token = await getAccessToken();
-  console.log('token', token);
   const urlPath = ContentBaseURL + path;
 
   try {
