@@ -16,8 +16,9 @@ verse content without managing the upstream auth workflow.
 
 ## Project Structure
 
-- `src/server.ts` – boots the Express server
 - `src/app.ts` – configures middleware, logging, and routing
+- `src/local.ts` – boots the Express server for local development
+- `src/server.ts` – exports the AWS Lambda handler, wrapping the Express app
 - `src/routes/qf.routes.ts` – Qur'an Foundation API-backed routes
 - `src/services/qfClient.ts` – OAuth token management and upstream requests
 - `src/utils` – environment variable loader & reusable error helpers
@@ -55,19 +56,33 @@ LOG_LEVEL=info
 - `pnpm dev` – run the API in watch mode using `.env.dev`
 - `pnpm prod` – watch mode using `.env`
 - `pnpm build` – type-check and emit JavaScript to `dist/`
+- `pnpm start` – run the compiled server from `dist/local.js`
 - `pnpm build:lambda` – bundle the Lambda handler with esbuild into `dist-lambda/`
-- `pnpm start` – run the compiled server from `dist/`
 - `pnpm lint` – run Biome lint
 - `pnpm format` – run Prettier
 
 ## Running Locally
 
-```bash
-pnpm dev
-```
+Local development uses `src/local.ts`, which keeps an Express listener running:
+
+- `pnpm dev` – hot-reload with `.env.dev`
+- `pnpm prod` – hot-reload against `.env`
+- `pnpm build && pnpm start` – run the compiled output from `dist/local.js`
 
 The server listens on `http://localhost:PORT` (defaults to `3000`). A health
 check is available at `/health`.
+
+### Lambda Bundle
+
+Build the AWS Lambda bundle (a self-contained ESM file in `dist-lambda/`):
+
+```bash
+pnpm build:lambda
+```
+
+The bundle exports a `handler` compatible with AWS API Gateway/Lambda.
+
+````
 
 ## API Endpoints
 
@@ -92,7 +107,7 @@ Validation & defaults are handled with Zod inside the route definitions.
 
 ```bash
 curl "http://localhost:3000/api/chapters/1/verses?language=en&per_page=5"
-```
+````
 
 ## Logging
 
